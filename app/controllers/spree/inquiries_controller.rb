@@ -10,9 +10,8 @@ module Spree
       @inquiry = Inquiry.new params[:inquiry]
       @inquiry.http_user_agent = request.env['HTTP_USER_AGENT']
       @inquiry.http_remote_addr = request.env['HTTP_X_FORWARDED_FOR'] || request.remote_ip
-      Rails.logger.info bot_submission?
 
-      if validate_captcha && @inquiry.save && !bot_submission?
+      if validate_captcha && @inquiry.save
         redirect_to contact_path, :notice => t(:on_send_message)
       else
         render :new
@@ -55,14 +54,6 @@ module Spree
           :message => t(:recaptcha_error_mes),
           :private_key => Spree::ContactUsConfiguration[:recaptcha_private_key]
         }
-    end
-
-    def bot_submission?
-      Rails.logger.info params[:leaveblank] != ""
-      Rails.logger.info params[:dontchange] != "http://"
-      if params[:leaveblank] != "" && params[:dontchange] != "http://"
-        flash[:notice] = t('go away bots')
-      end
     end
 
   end
